@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Starlight</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #EAE8FF; 
+            overflow-x: hidden;
+        }
+
+        .font-dancing {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            overflow: hidden; 
+        }
+
+        .stars, .twinkling {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .stars {
+            background: #000 url(https://www.transparenttextures.com/patterns/stardust.png) repeat top center;
+            z-index: -3;
+        }
+
+        .twinkling {
+            background: transparent url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/1231630/twinkling.png) repeat top center;
+            z-index: -2;
+            animation: move-twink-back 200s linear infinite;
+        }
+
+        @keyframes move-twink-back {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; }
+        }
+        
+        .shooting-star {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(-45deg, #a78bfa, rgba(0, 0, 255, 0));
+            border-radius: 999px;
+            filter: drop-shadow(0 0 6px #a78bfa);
+        }
+        @keyframes tail {
+            0% { width: 0; }
+            30% { width: 100px; }
+            100% { width: 0; }
+        }
+        @keyframes shooting {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(300px); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(18, 19, 38, 0.37);
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .constellation-dot {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .constellation-dot:hover {
+            transform: scale(1.8);
+            filter: drop-shadow(0 0 8px #fff);
+        }
+        .quality-label {
+            position: absolute;
+            color: #fde68a; 
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem; 
+            pointer-events: none; 
+            white-space: nowrap;
+            opacity: 0.9;
+        }
+
+        .gift { cursor: pointer; transform-origin: bottom center; }
+        .gift .lid { transition: transform 0.4s ease-in-out; }
+        .gift:hover .lid { transform: translateY(-25px) rotate(15deg); }
+
+        .candle {
+            width: 12px;
+            height: 80px;
+            background: #fff;
+            border-radius: 6px;
+            position: relative;
+            margin: 20px auto 0;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .flame {
+            width: 14px;
+            height: 28px;
+            background: #FFD700;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -30px;
+            left: -1px;
+            animation: flicker 1.5s ease-in-out infinite;
+            transform-origin: bottom center;
+            cursor: pointer;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .flame:hover { transform: scale(1.1); }
+        .flame.out { opacity: 0; transform: translateY(20px) scale(0); }
+        @keyframes flicker {
+            0%, 100% { transform: scaleY(1) scaleX(1); }
+            50% { transform: scaleY(0.95) scaleX(1.05); }
+        }
+        
+        #memory-modal { display: none; }
+        #memory-modal.flex { display: flex; }
+
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 leading-relaxed">
+
+    <div class="stars-container">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+       
+    </div>
+    
+    <div class="relative z-10 p-4 md:p-8">
+        
+        <header class="min-h-screen flex flex-col items-center justify-center text-center fade-in-section is-visible">
+            <h1 class="font-dancing text-6xl md:text-8xl font-bold text-white drop-shadow-lg">Happy Birthday,</h1>
+            <h2 class="font-dancing text-5xl md:text-7xl text-amber-300 drop-shadow-lg mt-4">Miss Universeee🌌</h2>
+            <div id="countdown" class="text-white text-2xl mt-8 flex space-x-4">
+                <div><span id="days">0</span> Days</div>
+                <div><span id="hours">0</span> Hours</div>
+                <div><span id="minutes">0</span> Mins</div>
+                <div><span id="seconds">0</span> Secs</div>
+            </div>
+            <p class="max-w-2xl mx-auto mt-8 text-lg md:text-xl text-indigo-200">
+                To someone who shines brighter than any star in the sky. The cosmos itself is celebrating you today.
+            </p>
+            <div class="mt-12 animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto">
+
+            <section class="my-24 fade-in-section">
+                <div class="glass-card p-8 md:p-12 text-center">
+                    <h3 class="font-dancing text-4xl md:text-5xl text-amber-300 mb-6">A little note for you...</h3>
+                    <p class="text-lg md:text-xl max-w-3xl mx-auto">
+                        "They say to wish upon a star, and I must have wished on the brightest one to have met someone as wonderful as you. You make the world brighter just by being in it. Happy Birthday to a truly special person."
+                    </p>
+                </div>
+            </section>
+
+            <section class="my-24 fade-in-section">
+                <h3 class="font-dancing text-4xl md:text-5xl text-center text-white mb-12">Moments That Shine</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="memory-item" data-src="./imagination1.jpg" data-caption="Your world full of endless dreams and beautiful possibilities.">
+                        <img src="https://placehold.co/400x400/6366f1/ffffff?text=What+I+Imagine" alt="Memory 1" class="rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                    </div>
+                    <div class="memory-item" data-src="./flower.jpg" data-caption="Your smile that can brighten even the darkest day.">
+                        <img src="https://placehold.co/400x400/ec4899/ffffff?text=The+Beautiful+Smile" alt="Memory 2" class="rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                    </div>
+                    <div class="memory-item" data-src="./journey.jpg" data-caption="Your path filled with hope, happiness, and countless adventures.">
+                        <img src="https://placehold.co/400x400/f59e0b/ffffff?text=Journey+Ahead" alt="Memory 3" class="rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                    </div>
+                     <div class="memory-item" data-src="./vibe.jpg" data-caption="Some feelings last a moment, but these vibes last forever.">
+                        <img src="https://placehold.co/400x400/10b981/ffffff?text=Forever+vibes" alt="Memory 4" class="rounded-lg cursor-pointer transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                    </div>
+                </div>
+            </section>
+            <section class="my-24 fade-in-section">
+                <h3 class="font-dancing text-4xl md:text-5xl text-center text-white mb-12">A Constellation of Your Qualities</h3>
+                <div class="glass-card p-8 md:p-12 relative h-96">
+                    <svg class="absolute inset-0 w-full h-full opacity-30" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 400 300">
+                        <line x1="50" y1="150" x2="120" y2="80" stroke="#a78bfa" stroke-width="1"/><line x1="120" y1="80" x2="200" y2="130" stroke="#a78bfa" stroke-width="1"/><line x1="200" y1="130" x2="250" y2="50" stroke="#a78bfa" stroke-width="1"/><line x1="250" y1="50" x2="350" y2="100" stroke="#a78bfa" stroke-width="1"/><line x1="200" y1="130" x2="180" y2="220" stroke="#a78bfa" stroke-width="1"/>
+                    </svg>
+                    
+                    <div class="absolute top-[calc(50%-10px)] left-[calc(12.5%-10px)]" data-tooltip="Your incredible kindness shines brighter than any star.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                        <span class="quality-label" style="left: 30px; top: -10px;">Kindness</span>
+                    </div>
+                    <div class="absolute top-[calc(26.6%-10px)] left-[calc(30%-10px)]" data-tooltip="Your laughter is the best kind of music.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                        <span class="quality-label" style="right: 30px; top: -10px;">Laughter</span>
+                    </div>
+                    <div class="absolute top-[calc(43.3%-10px)] left-[calc(50%-10px)]" data-tooltip="You have a heart as vast and beautiful as a nebula.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                        <span class="quality-label" style="left: 30px; top: -10px;">Big Heart</span>
+                    </div>
+                    <div class="absolute top-[calc(16.6%-10px)] left-[calc(62.5%-10px)]" data-tooltip="Your strength is truly inspiring.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                         <span class="quality-label" style="right: 30px; top: -10px;">Strength</span>
+                    </div>
+                    <div class="absolute top-[calc(33.3%-10px)] left-[calc(87.5%-10px)]" data-tooltip="Your intelligence and wit are out of this world.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                         <span class="quality-label" style="left: 30px; top: -10px;">Brilliance</span>
+                    </div>
+                    <div class="absolute top-[calc(73.3%-10px)] left-[calc(45%-10px)]" data-tooltip="The beautiful way you see the world makes everything better.">
+                        <div class="w-5 h-5 bg-white rounded-full constellation-dot"></div>
+                         <span class="quality-label" style="right: 30px; top: 10px;">Spirit</span>
+                    </div>
+
+                    <div id="tooltip" class="absolute bg-indigo-500 text-white text-sm rounded py-2 px-3 opacity-0 transition-opacity duration-300 pointer-events-none -mt-12">Tooltip text</div>
+                </div>
+            </section>
+            
+            <section class="my-24 fade-in-section">
+                <h3 class="font-dancing text-4xl md:text-5xl text-center text-white mb-12">Wishes for an Amazing Year</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">A Year of Joy</h4><p>May your coming year be filled with laughter that echoes through the cosmos and joy that outshines the brightest supernovas.</p></div>
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">Unending Adventure</h4><p>I wish you adventures as limitless as space itself. May you discover new worlds within yourself and around you.</p></div>
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">Limitless Love</h4><p>May you always be surrounded by love as warm as the sun's rays and as constant as the Northern Star.</p></div>
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">Peaceful Moments</h4><p>Wishing you quiet moments of peace, like the serene stillness of a starry night, where you can recharge and just be.</p></div>
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">Dreams Taking Flight</h4><p>May your dreams soar like comets across the sky, leaving a brilliant trail of success and happiness behind them.</p></div>
+                    <div class="glass-card p-6 transform hover:scale-105 transition-transform duration-300"><h4 class="font-bold text-xl text-amber-300 mb-2">Everything You Deserve</h4><p>Above all, I wish for you everything you've ever wished for yourself. You deserve the entire universe and more.</p></div>
+                </div>
+            </section>
+
+            <section class="my-24 fade-in-section text-center">
+                <h3 class="font-dancing text-4xl md:text-5xl text-white mb-4">A Little Something for You</h3>
+                <p class="text-indigo-200 mb-8">Click the gift box to reveal a message...</p>
+                <div id="gift-container" class="relative inline-block"><div class="gift w-40"><div class="lid -mb-4 z-10 relative"><svg viewBox="0 0 100 30"><path d="M 0 20 C 0 20, 50 -10, 100 20 L 100 30 L 0 30 Z" fill="#8B5CF6"/><path d="M 45 0 L 45 30 M 55 0 L 55 30 M 45 15 C 45 15, 20 25, 20 5 C 20 -15, 50 15, 50 15 C 50 15, 80 -15, 80 5 C 80 25, 55 15, 55 15" stroke="#FBBF24" stroke-width="3" fill="none"/></svg></div><div class="box"><svg viewBox="0 0 100 70"><rect width="100" height="70" fill="#a78bfa"/><rect x="45" width="10" height="70" fill="#FBBF24"/></svg></div></div></div>
+                <div id="gift-message" class="mt-8 text-2xl font-dancing text-amber-300 opacity-0 transition-opacity duration-500"><p>The greatest gift is getting to know you.</p></div>
+            </section>
+            
+            <section class="my-24 fade-in-section">
+                 <div class="glass-card p-8 md:p-12 text-center">
+                    <h3 class="font-dancing text-4xl md:text-5xl text-amber-300 mb-4">Make a Wish...</h3>
+                    <p class="text-lg md:text-xl max-w-3xl mx-auto mb-8">Close your eyes, think of something wonderful, and click the flame to blow out the candle. May this wish and all the others you hold in your heart come true.</p>
+                    <div class="candle"><div id="flame" class="flame"></div></div>
+                    <p id="wish-made-text" class="mt-6 text-xl text-indigo-200 opacity-0 transition-opacity duration-700">Wish made! May it light up your year!</p>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center py-12 border-t border-gray-700 fade-in-section">
+            <p class="text-indigo-200">With the warmest wishes on your special day.</p>
+            <p class="font-dancing text-2xl mt-2 text-white">Hope your day is amazinggg</p>
+        </footer>
+    </div>
+
+    <div id="memory-modal" class="fixed inset-0 bg-black bg-opacity-80 items-center justify-center p-4 z-50 hidden">
+        <div class="glass-card p-4 rounded-lg relative max-w-3xl w-full">
+            <button id="modal-close" class="absolute -top-4 -right-4 bg-white text-gray-900 rounded-full h-10 w-10 flex items-center justify-center font-bold text-xl">&times;</button>
+            <img id="modal-img" src="" alt="Memory Lane" class="rounded-lg w-full max-h-[70vh] object-contain">
+            <p id="modal-caption" class="text-center font-dancing text-2xl mt-4 text-amber-300"></p>
+        </div>
+    </div>
+    
+    <div id="music-player">
+        <audio id="background-music" loop src="./mi.m4a"></audio>
+        <button id="music-toggle" class="bg-indigo-500 hover:bg-indigo-600 rounded-full h-14 w-14 flex items-center justify-center text-white shadow-lg">
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const birthday = new Date("Sep 13, 2026 00:00:00").getTime();
+            const countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = birthday - now;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerText = days;
+                document.getElementById("hours").innerText = hours;
+                document.getElementById("minutes").innerText = minutes;
+                document.getElementById("seconds").innerText = seconds;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById("countdown").innerHTML = "The celebration is here!";
+                }
+            }, 1000);
+            const starsContainer = document.querySelector('.stars-container');
+            function createShootingStar() {
+                const star = document.createElement('div');
+                star.className = 'shooting-star';
+
+                const startTop = Math.random() * 80; 
+                const startLeft = Math.random() * 100; 
+                const duration = Math.random() * 2 + 1.5; 
+
+                star.style.top = `${startTop}vh`;
+                star.style.left = `${startLeft}vw`;
+                star.style.animation = `tail ${duration}s ease-in-out, shooting ${duration}s ease-in-out`;
+                star.style.animationIterationCount = '1';
+
+                starsContainer.appendChild(star);
+                
+                setTimeout(() => {
+                    star.remove();
+                }, duration * 1000);
+            }
+            for(let i = 0; i < 3; i++) {
+                setTimeout(createShootingStar, Math.random() * 2000);
+            }
+            setInterval(createShootingStar, 2500);
+
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('is-visible');
+                });
+            }, { threshold: 0.1 });
+            sections.forEach(section => observer.observe(section));
+
+            const dots = document.querySelectorAll('.constellation-dot');
+            const tooltip = document.getElementById('tooltip');
+            dots.forEach(dot => {
+                const parent = dot.parentElement;
+                const message = parent.getAttribute('data-tooltip');
+                parent.addEventListener('mouseenter', () => {
+                    tooltip.textContent = message;
+                    tooltip.style.opacity = '1';
+                    const parentRect = parent.getBoundingClientRect();
+                    const tooltipRect = tooltip.getBoundingClientRect();
+                    tooltip.style.left = `${parentRect.left+window.scrollX+(parentRect.width/2)-(tooltipRect.width/2)}px`;
+                    tooltip.style.top = `${parentRect.top+window.scrollY-tooltipRect.height-10}px`;
+                });
+                parent.addEventListener('mouseleave', () => { tooltip.style.opacity = '0'; });
+            });
+
+            document.getElementById('gift-container').addEventListener('click', () => {
+                document.getElementById('gift-message').style.opacity = '1';
+            });
+            const flame = document.getElementById('flame');
+            flame.addEventListener('click', () => {
+                if (!flame.classList.contains('out')) {
+                    flame.classList.add('out');
+                    document.getElementById('wish-made-text').style.opacity = '1';
+                }
+            });
+            const modal = document.getElementById('memory-modal');
+            const modalImg = document.getElementById('modal-img');
+            const modalCaption = document.getElementById('modal-caption');
+            const modalClose = document.getElementById('modal-close');
+            document.querySelectorAll('.memory-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    modalImg.src = item.dataset.src;
+                    modalCaption.textContent = item.dataset.caption;
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                });
+            });
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+            modalClose.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            const musicToggle = document.getElementById('music-toggle');
+            const audio = document.getElementById('background-music');
+            const playIcon = document.getElementById('play-icon');
+            const pauseIcon = document.getElementById('pause-icon');
+            musicToggle.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                } else {
+                    audio.pause();
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
